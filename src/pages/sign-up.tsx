@@ -5,6 +5,7 @@ import {Button} from '@components/Button'
 import Template from '../../public/bg-sign-up.jpg'
 import Logo from '../../public/logo.png'
 import {ArrowLeft, EnvelopeSimple, LockSimple, User} from 'phosphor-react'
+import {SelectCategory} from '@components/SelectCategory'
 
 export const SignUp = () => {
 	return (
@@ -19,6 +20,7 @@ export const SignUp = () => {
 					<Input type="text" placeholder='Nome'><User className='text-gray-hard' size={24} /></Input>
 					<Input type={"email"} placeholder='E-mail'><EnvelopeSimple className='text-gray-hard' size={24} /></Input>
 					<Input type={"password"} placeholder='Senha'><LockSimple className='text-gray-hard' size={24} /></Input>
+					<SelectCategory />
 					<Button>Entrar</Button>
 				</form>
 
