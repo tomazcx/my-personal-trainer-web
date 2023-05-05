@@ -1,11 +1,28 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {api} from "../../utils/api";
+
+export type User = {
+	name: string
+	avatar: string | undefined
+	email: string
+	ProviderInfo: {
+		description: string | undefined;
+		startHour: number;
+		endHour: number;
+		category: {
+			category: string
+		}
+	}
+}
 
 type USER_REDUCER = {
-	token: string | null
+	token: string | null,
+	user: User | null
 }
 
 const initialState: USER_REDUCER = {
-	token: null
+	token: null,
+	user: null
 }
 
 export const userSlice = createSlice({
@@ -13,7 +30,8 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		setCurrentUser(state, action) {
-			state.token = action.payload
+			state.token = action.payload.token
+			state.user = action.payload.user
 		}
 	}
 })

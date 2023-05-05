@@ -1,4 +1,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog"
+import {useRouter} from "next/router"
+import {useAppDispatch} from "../hooks/useAppDispatch"
+import {setCurrentUser} from "../store/user/user-reducer"
 import {Button, BUTTON_ENUM} from "./Button"
 
 type SignOutAlert = {
@@ -6,6 +9,14 @@ type SignOutAlert = {
 }
 
 export const SignOutAlert: React.FC<SignOutAlert> = ({children}) => {
+
+	const dispatch = useAppDispatch()
+	const router = useRouter()
+
+	const signOut = () => {
+		dispatch(setCurrentUser({token: null, user: null}))
+	}
+
 	return (
 		<AlertDialog.Root>
 			<AlertDialog.Trigger className="w-full">
@@ -20,7 +31,7 @@ export const SignOutAlert: React.FC<SignOutAlert> = ({children}) => {
 						<AlertDialog.Cancel className="flex-1">
 							<Button buttonType={BUTTON_ENUM.GRAY}>Cancelar</Button>
 						</AlertDialog.Cancel>
-						<AlertDialog.Action className="flex-1">
+						<AlertDialog.Action className="flex-1" onClick={signOut}>
 							<Button>Confirmar</Button>
 						</AlertDialog.Action>
 					</div>

@@ -1,78 +1,115 @@
-import Logo from '@public/logo.png'
-import Template from '@public/bg-login.jpg'
-import Image from 'next/image'
-import {Input} from '@components/Input'
-import {EnvelopeSimple, LockSimple, SignOut} from 'phosphor-react'
-import {Button} from '@components/Button'
-import Link from 'next/link'
-import {z} from 'zod'
-import {SubmitHandler, useForm} from 'react-hook-form'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {api} from '../utils/api'
-import {useCallback} from 'react'
-import {useAppDispatch} from '../hooks/useAppDispatch'
-import {setCurrentUser} from '../store/user/user-reducer'
-import {useAppSelector} from '../hooks/useAppSelector'
+import {Customer} from "@components/Customer"
+import {Header} from "@components/Header"
+import {RouteGuard} from "@components/RouteGuard";
+import {useRouter} from "next/router";
+import {addHours, format, isAfter, isBefore, parseISO, setHours, setMinutes} from "date-fns";
+import {useCallback, useEffect, useState} from "react";
+import {Calendar} from "react-calendar"
+import 'react-calendar/dist/Calendar.css';
+import {useAppSelector} from "../hooks/useAppSelector";
+import {ptBR} from "date-fns/locale";
+import {api} from "../utils/api";
 
-
-const formSchema = z.object({
-	email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
-	password: z.string().min(1, "Senha é obrigatória").min(6, "Senha precisa ter mais de 6 characteres")
-})
-
-type FormSchemaType = z.infer<typeof formSchema>
-
-
-export const SignIn = () => {
-
-	const {register, handleSubmit, formState: {errors}} = useForm<FormSchemaType>({resolver: zodResolver(formSchema)})
-	const dispatch = useAppDispatch()
-	const token = useAppSelector(state => state.user.token)
-	console.log(token)
-
-	const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
-		try {
-			const {token} = await signInRequest(data)
-			dispatch(setCurrentUser(token))
-		} catch (err: any) {
-			alert(err.response.data.message)
-		}
+type Appointment = {
+	id: string
+	date: string
+	providedBy: {
+		name: string
+		avatar: string | undefined
+	},
+	scheduledBy: {
+		name: string
+		avatar: string | undefined
 	}
+}
 
-	const signInRequest = useCallback(
-		async (data: FormSchemaType) => {
-			const response = await api.post('/sessions', data)
-			return response.data
-		}
-		, [])
+const Dashboard = () => {
+
+	const {token} = useAppSelector(state => state.user)
+	const router = useRouter()
+	const [selectedDate, setSelectedDate] = useState(new Date())
+	const [morningAppointments, setMorningAppointments] = useState<Appointment[]>([])
+	const [afternoonAppointments, setAfternoonAppointments] = useState<Appointment[]>([])
+
+	const getAppointments = useCallback(
+		async () => {
+			try {
+				const result = await api.get(`/appointments/me?month=${format(selectedDate, 'MM')}&day=${format(selectedDate, 'dd')}&year=${format(selectedDate, 'yyyy')}`, {
+					headers: {
+						Authorization: `Bearer: ${token}`
+					}
+				})
+
+				const midDay = setMinutes(setHours(selectedDate, 12), 0)
+				const morning = result.data.filter((app: Appointment) => {
+
+					const appDate = addHours(parseISO(app.date), 3)
+
+					if (isBefore(appDate, midDay) && isAfter(appDate, Date.now())) {
+						return app
+					}
+				})
+				const afternoon = result.data.filter((app: Appointment) => {
+
+					const appDate = addHours(parseISO(app.date), 3)
+
+					if (isAfter(appDate, midDay) && isAfter(appDate, Date.now())) {
+						return app
+					}
+				})
+
+				setMorningAppointments(morning)
+				setAfternoonAppointments(afternoon)
+
+			} catch (err) {
+				console.log(err)
+			}
+
+		}, [selectedDate, token])
+
+	useEffect(() => {
+		getAppointments()
+	}, [getAppointments])
+
 
 	return (
-		<main className="grid-cols-12 grid h-screen">
-			<Image src={Template} alt="template-image" className="col-span-7 bg-blue-600 h-full object-cover grayscale" />
+		<RouteGuard>
+			<Header />
+			<main className="grid grid-cols-12 px-36 mb-24 pt-12">
+				<section className="col-span-7 flex flex-col gap-12">
+					<div className="flex flex-col gap-4">
+						<h1 className="text-white text-3xl">Horários agendados</h1>
+						<h2 className="text-red-light"> {format(selectedDate, 'EEEE', {locale: ptBR})}, {format(selectedDate, 'dd/MM')}</h2>
+					</div>
 
-			<section className="col-span-5 h-full flex flex-col items-center gap-16 justify-center">
+					<div className="flex flex-col gap-8">
+						<div className="flex flex-col gap-2">
+							<span className="text-gray-hard">Manhã</span>
+							<hr className="border-gray-hard mb-4" />
+							<div className="col-span-10 flex flex-col gap-4">
+								{morningAppointments.length > 0 ? morningAppointments.map(appointment => <Customer date={appointment.date} key={appointment.id} customerData={appointment.scheduledBy} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+							</div>
 
-				<Image src={Logo} alt="Logo image" width={220} />
+						</div>
 
-				<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-					<h1 className='text-center text-white text-3xl mb-6 font-bold'>Faça seu Login</h1>
-					<Input type={"email"} register={register} name="email" id="email" placeholder='E-mail'><EnvelopeSimple className='text-gray-hard' size={24} /></Input>
-					{errors.email && (
-						<span className="text-red-600">{errors.email?.message}</span>
-					)}
-					<Input type="password" register={register} name="password" id="password" placeholder='Senha'><LockSimple className='text-gray-hard' size={24} /></Input>
-					{errors.password && (
-						<span className="text-red-600">{errors.password?.message}</span>
-					)}
-					<Button type="submit">Entrar</Button>
-					<Link href={'/forgot-password'} className="text-center underline text-white hover:text-gray-lighter transition-colors">Esqueci minha senha</Link>
-				</form>
+						<div className="flex flex-col gap-2">
+							<span className="text-gray-hard">Tarde</span>
+							<hr className="border-gray-hard mb-4" />
+							<div className="col-span-10 flex flex-col gap-4">
+								{afternoonAppointments.length > 0 ? afternoonAppointments.map(appointment => <Customer date={appointment.date} customerData={appointment.scheduledBy} key={appointment.id} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+							</div>
 
-				<Link href={'/sign-up'} className='text-red-light hover:text-red-default transition-colors cursor-pointer flex gap-2 underline hover'> <SignOut size={24} /> Criar minha conta</Link>
-			</section>
-		</main>
+						</div>
+
+					</div>
+				</section>
+				<section className="col-span-5 ">
+					<Calendar onChange={(date: Date) => setSelectedDate(date)} className={'bg-gray-light mx-auto text-gray-hard rounded-lg'} />
+				</section>
+
+			</main>
+		</RouteGuard>
 	)
 }
 
-export default SignIn
-
+export default Dashboard

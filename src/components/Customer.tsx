@@ -1,36 +1,35 @@
-import Dog from '@public/dog.jpg'
 import Image from 'next/image'
-import {ArrowFatRight, CaretRight, Clock} from 'phosphor-react'
+import {Clock} from 'phosphor-react'
+import User from '@public/pngwing.com.png'
+import {addHours, format, parseISO} from 'date-fns'
 
 type Customer = {
 	nextCustomer?: boolean
+	date: string
+	customerData: {
+		avatar: string | undefined,
+		name: string
+	}
 }
 
-export const Customer: React.FC<Customer> = ({nextCustomer}) => {
+export const Customer: React.FC<Customer> = ({nextCustomer, customerData, date}) => {
+
+
+	const customerAvatar = customerData.avatar ? `https://my-personal-trainer-api.up.railway.app/files/${customerData.avatar}` : User
+	const hour = format(addHours(parseISO(date), 3), 'HH:mm')
+
 	return (
 		<div className='flex items-center gap-4'>
-			{nextCustomer ? null : <div className='flex gap-4 items-center'>
-				<Clock size={24} className="text-red-light" />
-				<span className='text-white'>08:00</span>
-			</div>
-			}
-			<div className='bg-gray-light rounded-xl flex justify-between p-4 relative flex-1'>
-				{nextCustomer ? <CaretRight className='text-red-light absolute left-[-18px] h-[50px] top-1/2 -translate-y-1/2' size={24} /> : null
-				}
+			<Clock size={24} className="text-red-light" />
+			<span className='text-white'>{hour}</span>
+
+			<div className='bg-gray-light rounded-xl flex justify-between p-4 flex-1'>
 				<div className='flex gap-4 items-center'>
-					<Image src={Dog} alt="User image" width={50} className="rounded-full" />
-					<span className='text-white text-lg'>João Silva</span>
+					<Image src={customerAvatar} alt="User image" width={50} height={50} className="rounded-full" />
+					<span className='text-white text-lg'>{customerData.name}</span>
 				</div>
-
-				{nextCustomer ?
-					<div className='flex gap-4 items-center'>
-						<Clock size={24} className="text-red-light" />
-						<span className='text-white'>08:00</span>
-					</div>
-					: null
-				}
 			</div>
 
-		</div>
+		</div >
 	)
 }
