@@ -12,8 +12,8 @@ import {useEffect} from 'react'
 type FormSchema = {
 	description?: string,
 	category_id?: string,
-	startHour?: string,
-	endHour?: string
+	startHour?: string | number,
+	endHour?: string | number
 }
 
 type RequestData = {
