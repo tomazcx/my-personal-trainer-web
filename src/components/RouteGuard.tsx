@@ -1,8 +1,10 @@
 import {useRouter} from "next/router";
-import {ReactNode, useEffect, useState} from "react";
+import {JSXElementConstructor, ReactElement, ReactNode, useEffect, useState} from "react";
 import {useAppSelector} from "../hooks/useAppSelector";
 
-export const RouteGuard: React.FC<{children: ReactNode}> = ({children}) => {
+export const RouteGuard = ({children}: {
+	children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
+}) => {
 
 	const router = useRouter()
 	const [authorized, setAuthorized] = useState(false)

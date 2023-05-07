@@ -73,40 +73,43 @@ const Dashboard = () => {
 
 	return (
 		<RouteGuard>
-			<Header />
-			<main className="grid grid-cols-12 px-36 mb-24 pt-12">
-				<section className="col-span-7 flex flex-col gap-12">
-					<div className="flex flex-col gap-4">
-						<h1 className="text-white text-3xl">Horários agendados</h1>
-						<h2 className="text-red-light"> {format(selectedDate, 'EEEE', {locale: ptBR})}, {format(selectedDate, 'dd/MM')}</h2>
-					</div>
+			<>
+				<Header />
+				<main className="grid grid-cols-12 px-36 mb-24 pt-12">
+					<section className="col-span-7 flex flex-col gap-12">
+						<div className="flex flex-col gap-4">
+							<h1 className="text-white text-3xl">Horários agendados</h1>
+							<h2 className="text-red-light"> {format(selectedDate, 'EEEE', {locale: ptBR})}, {format(selectedDate, 'dd/MM')}</h2>
+						</div>
 
-					<div className="flex flex-col gap-8">
-						<div className="flex flex-col gap-2">
-							<span className="text-gray-hard">Manhã</span>
-							<hr className="border-gray-hard mb-4" />
-							<div className="col-span-10 flex flex-col gap-4">
-								{morningAppointments.length > 0 ? morningAppointments.map(appointment => <Customer date={appointment.date} key={appointment.id} customerData={appointment.scheduledBy} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+						<div className="flex flex-col gap-8">
+							<div className="flex flex-col gap-2">
+								<span className="text-gray-hard">Manhã</span>
+								<hr className="border-gray-hard mb-4" />
+								<div className="col-span-10 flex flex-col gap-4">
+									{morningAppointments.length > 0 ? morningAppointments.map(appointment => <Customer date={appointment.date} key={appointment.id} customerData={appointment.scheduledBy} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+								</div>
+
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<span className="text-gray-hard">Tarde</span>
+								<hr className="border-gray-hard mb-4" />
+								<div className="col-span-10 flex flex-col gap-4">
+									{afternoonAppointments.length > 0 ? afternoonAppointments.map(appointment => <Customer date={appointment.date} customerData={appointment.scheduledBy} key={appointment.id} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+								</div>
+
 							</div>
 
 						</div>
+					</section>
+					<section className="col-span-5 relative">
+						<Calendar onChange={(date) => setSelectedDate(date)} />
+					</section>
 
-						<div className="flex flex-col gap-2">
-							<span className="text-gray-hard">Tarde</span>
-							<hr className="border-gray-hard mb-4" />
-							<div className="col-span-10 flex flex-col gap-4">
-								{afternoonAppointments.length > 0 ? afternoonAppointments.map(appointment => <Customer date={appointment.date} customerData={appointment.scheduledBy} key={appointment.id} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
-							</div>
+				</main>
 
-						</div>
-
-					</div>
-				</section>
-				<section className="col-span-5 relative">
-					<Calendar onChange={(date) => setSelectedDate(date)} />
-				</section>
-
-			</main>
+			</>
 		</RouteGuard>
 	)
 }
