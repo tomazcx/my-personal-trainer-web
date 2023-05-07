@@ -1,5 +1,4 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {api} from "../../utils/api";
 
 export type User = {
 	name: string
@@ -9,20 +8,20 @@ export type User = {
 		description: string | undefined;
 		startHour: number;
 		endHour: number;
-		category: {
-			category: string
-		}
+		category_id: string
 	}
 }
 
 type USER_REDUCER = {
+	id: string | null
 	token: string | null,
 	user: User | null
 }
 
 const initialState: USER_REDUCER = {
 	token: null,
-	user: null
+	user: null,
+	id: null
 }
 
 export const userSlice = createSlice({
@@ -32,9 +31,13 @@ export const userSlice = createSlice({
 		setCurrentUser(state, action) {
 			state.token = action.payload.token
 			state.user = action.payload.user
+			state.id = action.payload.id
+		},
+		setUserProfileData(state, action) {
+			state.user = action.payload
 		}
 	}
 })
 
-export const {setCurrentUser} = userSlice.actions
+export const {setCurrentUser, setUserProfileData} = userSlice.actions
 export const userReducer = userSlice.reducer

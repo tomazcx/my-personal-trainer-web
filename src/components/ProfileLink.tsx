@@ -10,9 +10,9 @@ export const ProfileLink: React.FC = () => {
 	const userAvatar = !user?.avatar ? PersonalImage : `https://my-personal-trainer-api.up.railway.app/files/${user?.avatar}`
 
 	return (
-		<Link href={'/dashboard/profile'} className="flex gap-4 items-center">
+		<Link href={'/profile'} className="flex gap-4 items-center">
 			<div className='w-[60px] h-[60px]'>
-				<Image src={userAvatar} alt="user profile photo" className="object-cover w-full h-full rounded-full" />
+				<Image src={userAvatar} alt="user profile photo" className="object-cover w-full h-full rounded-full" width={120} height={120} />
 			</div>
 			<div className="flex flex-col gap-2">
 				<span className="text-gray-hard">Bem vindo,</span>

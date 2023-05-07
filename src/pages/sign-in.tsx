@@ -18,7 +18,7 @@ import {useRouter} from 'next/router'
 
 const formSchema = z.object({
 	email: z.string().email('Email inválido').min(1, 'Email é obrigatório'),
-	password: z.string().min(1, "Senha é obrigatória").min(6, "Senha precisa ter mais de 6 characteres")
+	password: z.string().min(1, "Senha é obrigatória").min(6, "Senha precisa ter mais de 6 caracteres.")
 })
 
 type FormSchemaType = z.infer<typeof formSchema>
@@ -28,14 +28,13 @@ export const SignIn = () => {
 
 	const {register, handleSubmit, formState: {errors}} = useForm<FormSchemaType>({resolver: zodResolver(formSchema)})
 	const dispatch = useAppDispatch()
-	const {user, token} = useAppSelector(state => state.user)
 	const router = useRouter()
 
 	const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
 		try {
 			const {user, token} = await signInRequest(data)
-			dispatch(setCurrentUser({token, user}))
-			router.push('/dashboard')
+			dispatch(setCurrentUser({token, user, id: user.id}))
+			router.push('/')
 		} catch (err: any) {
 			alert(err.response.data.message)
 		}

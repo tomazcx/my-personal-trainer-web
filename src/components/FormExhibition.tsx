@@ -2,16 +2,88 @@ import {Input} from './Input'
 import {Button} from './Button'
 import {Clock} from 'phosphor-react'
 import {SelectCategory} from './SelectCategory'
+import {SubmitHandler, useForm} from 'react-hook-form'
+import {api} from '../utils/api'
+import {useAppSelector} from '../hooks/useAppSelector'
+import {useAppDispatch} from '../hooks/useAppDispatch'
+import {setUserProfileData} from "../store/user/user-reducer"
+import {useEffect} from 'react'
 
-export const FormExhibition: React.FC = () => {
+type FormSchema = {
+	description?: string,
+	category_id?: string,
+	startHour?: string,
+	endHour?: string
+}
+
+type RequestData = {
+	[key: string]: string | number
+}
+
+type FormExhibition = {
+	profileData: {
+		description?: string
+		endHour?: number
+		startHour?: number
+		category_id?: string
+	}
+
+}
+
+export const FormExhibition: React.FC<FormExhibition> = ({profileData}) => {
+
+	const {register, handleSubmit, setValue} = useForm({
+		defaultValues: profileData
+	})
+	const {token, user} = useAppSelector(state => state.user)
+	const dispatch = useAppDispatch()
+
+	const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+
+		const requestData: RequestData = {}
+
+		for (const [key, value] of Object.entries(data)) {
+			if (typeof value === 'string') {
+				if (value.trim() !== "") {
+					requestData[key] = value
+				}
+			}
+
+		}
+		try {
+			const response = await api.put('/providers', requestData, {
+				headers: {
+					Authorization: `Bearer: ${token}`
+				}
+			})
+
+			const newUser = {
+				...user,
+				ProviderInfo: {
+					...user?.ProviderInfo,
+					...data
+				}
+			}
+
+			console.log(newUser)
+
+			dispatch(setUserProfileData(newUser))
+
+			alert('Dados atualizados!')
+		} catch (err: any) {
+			alert(err.response.data.message)
+		}
+
+	}
+
 	return (
 		<>
 			<h1 className="mb-8 text-2xl text-white font-bold text-center">Alterar informações</h1>
-			<form action="" className="max-w-[400px] flex flex-col gap-6">
-				<textarea id="" name="" cols={30} rows={10} placeholder="Descrição" className="bg-gray-dark rounded-xl placeholder:text-gray-hard p-4 box-border text-white focus:outline-red-default outline-none"></textarea>
-				<SelectCategory />
-				<Input placeholder='Hora de início' type={'number'}><Clock size={24} className="text-gray-hard" /></Input>
-				<Input placeholder='Hora de término' type={'number'}><Clock size={24} className="text-gray-hard" /></Input>
+			<form onSubmit={handleSubmit(onSubmit)} className="max-w-[400px] flex flex-col gap-6">
+				<textarea id="description" {...register('description')} cols={30} rows={10} placeholder="Descrição" className="bg-gray-dark rounded-xl placeholder:text-gray-hard p-4 box-border text-white outline-none"></textarea>
+				<SelectCategory defaultValue={profileData.category_id} register={register} name="category_id" />
+				<Input placeholder='Hora de início' name='startHour' register={register} type={'number'}><Clock size={24} className="text-gray-hard" /></Input>
+				<Input placeholder='Hora de término' name='endHour' register={register} type={'number'}><Clock size={24} className="text-gray-hard" /></Input>
 				<Button>Salvar</Button>
 			</form>
 

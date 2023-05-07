@@ -14,7 +14,7 @@ export const SignOutAlert: React.FC<SignOutAlert> = ({children}) => {
 	const router = useRouter()
 
 	const signOut = () => {
-		dispatch(setCurrentUser({token: null, user: null}))
+		dispatch(setCurrentUser({token: null, user: null, id: null}))
 	}
 
 	return (

@@ -5,7 +5,6 @@ import {useRouter} from "next/router";
 import {addHours, format, isAfter, isBefore, parseISO, setHours, setMinutes} from "date-fns";
 import {useCallback, useEffect, useState} from "react";
 import {Calendar} from "react-calendar"
-import 'react-calendar/dist/Calendar.css';
 import {useAppSelector} from "../hooks/useAppSelector";
 import {ptBR} from "date-fns/locale";
 import {api} from "../utils/api";
@@ -103,8 +102,8 @@ const Dashboard = () => {
 
 					</div>
 				</section>
-				<section className="col-span-5 ">
-					<Calendar onChange={(date: Date) => setSelectedDate(date)} className={'bg-gray-light mx-auto text-gray-hard rounded-lg'} />
+				<section className="col-span-5 relative">
+					<Calendar onChange={(date) => setSelectedDate(date)} />
 				</section>
 
 			</main>

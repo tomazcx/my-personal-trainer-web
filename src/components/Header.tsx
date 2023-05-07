@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
 	return (
 		<header className="bg-gray-dark py-6 px-36 flex justify-between items-center">
 			<div className='flex gap-12 items-center'>
-				<Image src={Logo} alt="Logo" width={120} />
+				<Image src={Logo} alt="Logo" width={120} height={120} />
 				<ProfileLink />
 			</div>
 			<div>
