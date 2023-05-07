@@ -104,7 +104,7 @@ const Dashboard = () => {
 						</div>
 					</section>
 					<section className="col-span-5 relative">
-						<Calendar onChange={(date) => setSelectedDate(date)} />
+						<Calendar onChange={(date: any) => setSelectedDate(date)} value={selectedDate} />
 					</section>
 
 				</main>
