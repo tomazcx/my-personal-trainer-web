@@ -29,6 +29,7 @@ const Dashboard = () => {
 	const [selectedDate, setSelectedDate] = useState(new Date())
 	const [morningAppointments, setMorningAppointments] = useState<Appointment[]>([])
 	const [afternoonAppointments, setAfternoonAppointments] = useState<Appointment[]>([])
+	const [nightAppointments, setNightAppointments] = useState<Appointment[]>([])
 
 	const getAppointments = useCallback(
 		async () => {
@@ -40,6 +41,8 @@ const Dashboard = () => {
 				})
 
 				const midDay = setMinutes(setHours(selectedDate, 12), 0)
+				const endAfternoon = setMinutes(setHours(selectedDate, 18), 0)
+
 				const morning = result.data.filter((app: Appointment) => {
 
 					const appDate = addHours(parseISO(app.date), 3)
@@ -52,13 +55,24 @@ const Dashboard = () => {
 
 					const appDate = addHours(parseISO(app.date), 3)
 
-					if (isAfter(appDate, midDay) && isAfter(appDate, Date.now())) {
+					if (isAfter(appDate, midDay) && isAfter(appDate, Date.now()) && isBefore(appDate, endAfternoon)) {
 						return app
 					}
 				})
 
+				const night = result.data.filter((app: Appointment) => {
+
+					const appDate = addHours(parseISO(app.date), 3)
+
+					if (isAfter(appDate, endAfternoon) && isAfter(appDate, Date.now())) {
+						return app
+					}
+				})
+
+
 				setMorningAppointments(morning)
 				setAfternoonAppointments(afternoon)
+				setNightAppointments(night)
 
 			} catch (err) {
 				console.log(err)
@@ -100,6 +114,16 @@ const Dashboard = () => {
 								</div>
 
 							</div>
+
+							<div className="flex flex-col gap-2">
+								<span className="text-gray-hard">Noite</span>
+								<hr className="border-gray-hard mb-4" />
+								<div className="col-span-10 flex flex-col gap-4">
+									{nightAppointments.length > 0 ? nightAppointments.map(appointment => <Customer date={appointment.date} customerData={appointment.scheduledBy} key={appointment.id} />) : <span className="text-gray-lighter">Nenhum atendimento agendado.</span>}
+								</div>
+
+							</div>
+
 
 						</div>
 					</section>

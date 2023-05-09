@@ -42,6 +42,19 @@ export const FormExhibition: React.FC<FormExhibition> = ({profileData}) => {
 
 		const requestData: RequestData = {}
 
+		if (data.startHour && data.endHour) {
+			if (data.startHour < 6 || data.endHour > 21) {
+				alert('Selecione um horário entre 06:00 e 21:00')
+				return
+			}
+
+			if (data.startHour >= data.endHour) {
+				alert('A data de início não pode ser maior que a data de fim.')
+				return
+			}
+
+		}
+
 		for (const [key, value] of Object.entries(data)) {
 			if (typeof value === 'string') {
 				if (value.trim() !== "") {
@@ -50,8 +63,9 @@ export const FormExhibition: React.FC<FormExhibition> = ({profileData}) => {
 			}
 
 		}
+
 		try {
-			const response = await api.put('/providers', requestData, {
+			await api.put('/providers', requestData, {
 				headers: {
 					Authorization: `Bearer: ${token}`
 				}
