@@ -43,7 +43,7 @@ export const FormExhibition: React.FC<FormExhibition> = ({profileData}) => {
 		const requestData: RequestData = {}
 
 		if (data.startHour && data.endHour) {
-			if (Number(data.startHour < 6) || Number(data.endHour > 21)) {
+			if (Number(data.startHour) < 6 || Number(data.endHour) > 21) {
 				alert('Selecione um horário entre 06:00 e 21:00')
 				return
 			}
