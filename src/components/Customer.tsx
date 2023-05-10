@@ -25,7 +25,9 @@ export const Customer: React.FC<Customer> = ({nextCustomer, customerData, date})
 
 			<div className='bg-gray-light rounded-xl flex justify-between p-4 flex-1'>
 				<div className='flex gap-4 items-center'>
-					<Image src={customerAvatar} alt="User image" width={50} height={50} className="rounded-full" />
+					<div className='w-[50px] h-[50px]'>
+						<Image src={customerAvatar} alt="User image" width={50} height={50} className="rounded-full w-full h-full object-cover" />
+					</div>
 					<span className='text-white text-lg'>{customerData.name}</span>
 				</div>
 			</div>
