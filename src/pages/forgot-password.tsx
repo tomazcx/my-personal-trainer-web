@@ -4,7 +4,7 @@ import {useState} from 'react'
 
 const ForgotPassword = () => {
 
-	const [formToRender, setSelectedForm] = useState(1)
+	const [formToRender, setSelectedForm] = useState(0)
 
 	return (
 		<main className="">
